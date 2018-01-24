@@ -1,69 +1,211 @@
 setscreen ("graphics:1260;920,offscreenonly;nobuttonbar;nocursor")
 
-% -- START VECTOR CLASS -- %
-%Vector class was not created by me, found at http://compsci.ca/v3/viewtopic.php?t=13981
-class Vector 
-    export add, element_at, is_empty, set_element, size 
-
-    var elements : flexible array 0 .. -1 of ^anyclass 
-    var bound := -1 
-    var no_elements := true 
-
-    fcn bound_check (position : int) : int 
-        if position <= 0 then 
-            result 0 
-        elsif position >= bound then 
-            result bound 
-        end if 
-        result position 
-    end bound_check 
-
-    proc add (element : ^anyclass) 
-        bound += 1 
-        new elements, bound 
-        elements (bound) := element 
-        no_elements := false 
-    end add 
-
-    fcn element_at (position : int) : ^anyclass 
-        if bound = -1 then 
-            result nil 
-        end if 
-        result elements (bound_check (position)) 
-    end element_at 
-
-    fcn is_empty () : boolean 
-        result no_elements 
-    end is_empty 
-
-    proc set_element (position : int, element : ^anyclass) 
-        elements (position) := element 
-    end set_element 
-
-    fcn size () : int 
-        result bound + 1 
-    end size 
-end Vector
-
-% -- END VECTOR CLASS -- %
-
 var chars : array char of boolean
-var sniperX, sniperY, sniperWidth, sniperHeight, speed, recoil, cooldown, enemies, ammo, reloadCountdown : int
+var sniperX, sniperY, sniperWidth, sniperHeight, speed, recoil, cooldown, timeLeft, enemies, ammo, reloadCountdown, starSize : int
 sniperX := 500
 sniperY := 500
-sniperWidth := 150
-sniperHeight := 150
+sniperWidth := 175
+sniperHeight := 175
 speed := 4
 recoil := 80
 cooldown := 0
 enemies := 20
 ammo := 5
+starSize := 15
 reloadCountdown := 0
-
-var vec : ^Vector 
-new Vector, vec 
+timeLeft := 50000
+var sniperWidthHalf : int := round (sniperWidth / 2)
+var sniperHeightHalf : int := round (sniperHeight / 2)
 
 var ammoString : string := "Ammo: " + intstr (ammo)
+
+var font : int
+font := Font.New ("Agency FB:40")
+var width : int := Font.Width ("Press [R] to reload!", font)
+var height, ascent, descent, internalLeading : int
+Font.Sizes (font, height, ascent, descent, internalLeading)
+
+type coordinates: 
+record 
+    x : int 
+    y: int 
+end record 
+
+var hostiles : array 1 .. 4 of coordinates
+
+hostiles(1).x := 100
+hostiles(1).y := 506
+hostiles(2).x := 350
+hostiles(2).y := 406
+hostiles(3).x := 600
+hostiles(3).y := 600
+hostiles(4).x := 600
+hostiles(4).y := 600
+
+% -- START INTRO -- %
+
+for i : 16 .. 31
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("SniperX", sniperX + 60, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(3000)
+
+for decreasing i : 31 .. 16
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("SniperX", sniperX + 60, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(1000)
+
+for i : 16 .. 31
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("Created by Erik Dombi", sniperX - 50, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(3000)
+
+for decreasing i : 31 .. 16
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("Created by Erik Dombi", sniperX - 50, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(1000)
+
+for i : 16 .. 31
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("A group of terrorist have taken a hostage", sniperX - 200, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+
+delay(3000)
+
+for i : 16 .. 31
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("A group of terrorist have taken a hostage", sniperX - 200, sniperY - 60, font, 31)   
+    Draw.Text ("Your object is to eliminate the enemies", sniperX - 190, sniperY - 150, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(3000)
+
+for decreasing i : 31 .. 16
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("A group of terrorist have taken a hostage", sniperX - 200, sniperY - 60, font, i)   
+    Draw.Text ("Your object is to eliminate the enemies", sniperX - 190, sniperY - 150, font, i)   
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+
+delay(1000)
+
+for i : 16 .. 31
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("Recon reports indicate there are 20 hostiles on site", sniperX - 300, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(3000)
+
+for decreasing i : 31 .. 16
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("Recon reports indicate there are 20 hostiles on site", sniperX - 300, sniperY - 60, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(1000)
+
+for i : 16 .. 31
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("W/A/S/D To Move, Space to Shoot, Shift to steady aim,", sniperX - 280, sniperY - 60, font, i)   
+    Draw.Text ("and CTRL to Steady Aim Pro", sniperX - 100, sniperY - 120, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(3000)
+
+for decreasing i : 31 .. 16
+    cls
+    
+    drawfillbox(0, 0, 2000, 2000, black)
+    Draw.Text ("W/A/S/D To Move, Space to Shoot, Shift to steady aim,", sniperX - 280, sniperY - 60, font, i)   
+    Draw.Text ("and CTRL to Steady Aim Pro", sniperX - 100, sniperY - 120, font, i)   
+    
+    View.Update
+    
+    delay (80)
+    
+end for
+    
+delay(2000)
+
+% -- END INTRO -- %
+
+font := Font.New ("Agency FB:20")
 
 loop
     
@@ -82,6 +224,18 @@ loop
         if reloadCountdown = 1 then
             ammo := 5
         end if
+    end if
+    
+    if timeLeft > 0 then
+        timeLeft -= 3
+    end if
+    
+    if enemies = 0 & cooldown = 0 then
+        %PUT ENDGAME HERE (WIN)
+    end if
+    
+    if timeLeft = 0 then
+        %PUT ENDGAME HERE (LOSE)
     end if
     
     Input.KeyDown (chars)
@@ -103,9 +257,21 @@ loop
     end if
     if chars (' ') & cooldown = 0 & reloadCountdown = 0 then
         if ammo > 0 then
+            
+            for i : 1 .. upper(hostiles)
+                if hostiles(i).x - (sniperX + sniperWidthHalf) >= -4 & hostiles(i).x - (sniperX + sniperWidthHalf) <= 4 then
+                    if hostiles(i).y - (sniperY - sniperHeightHalf) >= -4 & hostiles(i).y - (sniperY - sniperHeightHalf) <= 4 then
+                        
+                        enemies -= 1
+                        hostiles(i).x := -999
+                        hostiles(i).y := -999
+                        
+                    end if
+                end if
+            end for
+                
             sniperY += recoil
             cooldown := recoil
-            enemies -= 1
             ammo -= 1
         end if
     end if
@@ -135,27 +301,31 @@ loop
     drawfillbox (0, 0, 1260, 99, 19)
     
     %Building1
-    drawfillbox (20, 100, 200, 500, darkgrey) %Building Background
-    drawfillbox (25, 475, 195, 495, black) %Window1 (Very top)
-    drawfillbox (25, 450, 195, 470, black) %Window2
-    drawfillbox (25, 425, 195, 445, black) %Window3
-    drawfillbox (25, 400, 195, 420, black) %Window4
-    drawfillbox (25, 375, 195, 395, black) %Window5
-    drawfillbox (25, 450, 195, 470, black) %Window6
-    %24
-    drawfillbox (44, 100, 54, 500, darkgrey) %WindowDivider1
-    drawfillbox (78, 100, 88, 500, darkgrey) %WindowDivider2
-    drawfillbox (112, 100, 122, 500, darkgrey) %WindowDivider4
-    drawfillbox (146, 100, 156, 500, darkgrey) %WindowDivider5
+    drawfillbox (0, 100, 200, 500, darkgrey)
     
     %Building2
     drawfillbox (201, 100, 400, 400, 17)
+    
+    %Building3
+    drawfillbox(400, 100, 600, 600, 18)
+    
+    %Building4
+    drawfillbox(600, 100, 900, 400, 15)
+    
+    %Building5
+    drawfillbox(900, 100, 1100, 500, 23)
+    
+    %Building6
+    drawfillbox(1100, 100, 1260, 700, 20)
+    
     % -- END DRAWING LANDSCAPE -- %
     
     % -- START DRAWING ENEMIES -- % (Oh god)
     
-    drawfilloval(150, 505, 5, 5, red)
-    
+    for i : 1 .. upper(hostiles)
+        drawfilloval(hostiles(i).x, hostiles(i).y, 5, 5, 12)
+    end for
+        
     % -- END DRAWING ENEMIES -- %
     
     % -- START DRAWING SNIPER SCOPE -- %
@@ -193,8 +363,6 @@ loop
     drawfillbox (1260, 1260, sniperX + sniperWidth - 50, sniperY - 10, black)
     
     %Draws the lines through the middle of the scope
-    var sniperWidthHalf : int := round (sniperWidth / 2)
-    var sniperHeightHalf : int := round (sniperHeight / 2)
     drawfillbox (sniperX, sniperY - sniperHeightHalf + 1, sniperX + sniperWidth, sniperY - sniperHeightHalf - 1, black)
     drawfillbox (sniperX + sniperWidthHalf - 1, sniperY, sniperX + sniperWidthHalf + 1, sniperY - sniperHeight, black)
     drawfilloval (sniperX + sniperWidthHalf, sniperY - sniperHeightHalf, 3, 3, red)
@@ -205,11 +373,6 @@ loop
     
     ammoString := "Ammo: " + intstr (ammo)
     
-    var font : int
-    font := Font.New ("Agency FB:20")
-    var width : int := Font.Width ("This is in a serif font", font)
-    var height, ascent, descent, internalLeading : int
-    Font.Sizes (font, height, ascent, descent, internalLeading)
     Draw.Text (ammoString, sniperX + sniperWidth + 10, sniperY - sniperHeightHalf - 10, font, white)
     if ammo = 0 & cooldown = 0 & reloadCountdown = 0 then
         Draw.Text ("Press [R] to reload!", sniperX + sniperWidth + 10, sniperY - sniperHeight + 36, font, white)
@@ -224,7 +387,7 @@ loop
     % -- START DRAW BULLET STAR -- %
     
     if cooldown = recoil then
-        Draw.FillStar (sniperX + 60, sniperY - 60, sniperX + 90, sniperY - 90, yellow)
+        Draw.FillStar (sniperX + sniperWidthHalf - starSize, sniperY - sniperHeightHalf - starSize, sniperX + sniperWidthHalf + starSize, sniperY - sniperHeightHalf + starSize, yellow)
     end if
     
     % -- END DRAW BULLET STAR -- %
@@ -233,7 +396,7 @@ loop
     
     colorback (black)
     color (white)
-    put "Enemies: ", enemies, "  |  Score: null  |  otherVar: null"
+    put "Enemies: ", enemies, "  |  Time Remaining:", intstr (timeLeft) (1 .. 3)
     
     
     
