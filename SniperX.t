@@ -1,7 +1,8 @@
 setscreen ("graphics:1260;920,offscreenonly;nobuttonbar;nocursor")
 
 var chars : array char of boolean
-var sniperX, sniperY, sniperWidth, sniperHeight, speed, recoil, cooldown, timeLeft, enemies, ammo, reloadCountdown, starSize : int
+var sniperX, sniperY, sniperWidth, sniperHeight, speed, recoil, cooldown, timeLeft, enemies, ammo, reloadCountdown, starSize, totalAmmo : int
+var win, lose : boolean
 sniperX := 500
 sniperY := 500
 sniperWidth := 175
@@ -14,6 +15,9 @@ ammo := 5
 starSize := 15
 reloadCountdown := 0
 timeLeft := 50000
+totalAmmo := 20
+lose := false
+win := false
 var sniperWidthHalf : int := round (sniperWidth / 2)
 var sniperHeightHalf : int := round (sniperHeight / 2)
 
@@ -31,16 +35,48 @@ record
     y: int 
 end record 
 
-var hostiles : array 1 .. 4 of coordinates
+var hostiles : array 1 .. 20 of coordinates
 
 hostiles(1).x := 100
 hostiles(1).y := 506
 hostiles(2).x := 350
 hostiles(2).y := 406
-hostiles(3).x := 600
-hostiles(3).y := 600
-hostiles(4).x := 600
+hostiles(3).x := 300
+hostiles(3).y := 106
+hostiles(4).x := 320
 hostiles(4).y := 600
+hostiles(5).x := 350
+hostiles(5).y := 600
+hostiles(6).x := 1100
+hostiles(6).y := 106
+hostiles(7).x := 700
+hostiles(7).y := 600
+hostiles(8).x := 740
+hostiles(8).y := 600
+hostiles(9).x := 750
+hostiles(9).y := 106
+hostiles(10).x := 800
+hostiles(10).y := 600
+hostiles(11).x := 900
+hostiles(11).y := 106
+hostiles(12).x := 840
+hostiles(12).y := 600
+hostiles(13).x := 100
+hostiles(13).y := 106
+hostiles(14).x := 900
+hostiles(14).y := 600
+hostiles(15).x := 540
+hostiles(15).y := 106
+hostiles(16).x := 960
+hostiles(16).y := 600
+hostiles(17).x := 1000
+hostiles(17).y := 600
+hostiles(18).x := 1050
+hostiles(18).y := 600
+hostiles(19).x := 1100
+hostiles(19).y := 600
+hostiles(20).x := 1200
+hostiles(20).y := 106
 
 % -- START INTRO -- %
 
@@ -222,7 +258,18 @@ loop
     if reloadCountdown > 0 then
         reloadCountdown -= 1
         if reloadCountdown = 1 then
-            ammo := 5
+            if totalAmmo < 5 then
+                if totalAmmo > (5 - ammo) then
+                    totalAmmo -= (5 - ammo)
+                    ammo := 5
+                else
+                    ammo += totalAmmo
+                    totalAmmo := 0
+                end if
+            else
+                totalAmmo -= (5 - ammo)
+                ammo := 5
+            end if
         end if
     end if
     
@@ -230,12 +277,17 @@ loop
         timeLeft -= 3
     end if
     
-    if enemies = 0 & cooldown = 0 then
-        %PUT ENDGAME HERE (WIN)
+    if timeLeft < 1 then
+        lose := true
     end if
     
-    if timeLeft = 0 then
-        %PUT ENDGAME HERE (LOSE)
+    if ammo = 0 & totalAmmo = 0 & cooldown = 0 then
+        lose := true
+    end if
+    
+    if enemies = 0 & cooldown = 0 then
+        win := true
+        lose := false
     end if
     
     Input.KeyDown (chars)
@@ -252,7 +304,7 @@ loop
     if chars ('d') then
         sniperX += speed
     end if
-    if chars ('r') & reloadCountdown = 0 & ammo < 5 & cooldown = 0 then
+    if chars ('r') & reloadCountdown = 0 & ammo < 5 & cooldown = 0 & totalAmmo > 0 then
         reloadCountdown := 100
     end if
     if chars (' ') & cooldown = 0 & reloadCountdown = 0 then
@@ -371,7 +423,7 @@ loop
     
     % -- START DRAW AMMO COUNT -- %
     
-    ammoString := "Ammo: " + intstr (ammo)
+    ammoString := "Ammo: " + intstr (ammo) + "/" + intstr(totalAmmo)
     
     Draw.Text (ammoString, sniperX + sniperWidth + 10, sniperY - sniperHeightHalf - 10, font, white)
     if ammo = 0 & cooldown = 0 & reloadCountdown = 0 then
@@ -398,6 +450,22 @@ loop
     color (white)
     put "Enemies: ", enemies, "  |  Time Remaining:", intstr (timeLeft) (1 .. 3)
     
+    
+    if lose = true then
+        drawfillbox(0,0, 1300, 1300, black)
+        colorback(black)
+        color(white)
+        put "YOU LOST"
+        put "YOU HAD " + intstr(enemies) + " REMAINING"
+    end if
+    
+    if win = true then
+        drawfillbox(0,0, 1300, 1300, black)
+        colorback(black)
+        color(white)
+        put "YOU WON"
+        put "YOU HAD " + intstr(timeLeft) + " SECONDS REMAINING"
+    end if
     
     
     %Updates the program's graphics to the new canvas
