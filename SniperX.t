@@ -44,37 +44,37 @@ hostiles(2).y := 406
 hostiles(3).x := 300
 hostiles(3).y := 106
 hostiles(4).x := 320
-hostiles(4).y := 600
+hostiles(4).y := 400
 hostiles(5).x := 350
-hostiles(5).y := 600
+hostiles(5).y := 500
 hostiles(6).x := 1100
 hostiles(6).y := 106
 hostiles(7).x := 700
-hostiles(7).y := 600
+hostiles(7).y := 300
 hostiles(8).x := 740
-hostiles(8).y := 600
+hostiles(8).y := 200
 hostiles(9).x := 750
 hostiles(9).y := 106
 hostiles(10).x := 800
-hostiles(10).y := 600
+hostiles(10).y := 300
 hostiles(11).x := 900
 hostiles(11).y := 106
 hostiles(12).x := 840
-hostiles(12).y := 600
+hostiles(12).y := 400
 hostiles(13).x := 100
 hostiles(13).y := 106
 hostiles(14).x := 900
-hostiles(14).y := 600
+hostiles(14).y := 450
 hostiles(15).x := 540
 hostiles(15).y := 106
 hostiles(16).x := 960
-hostiles(16).y := 600
+hostiles(16).y := 250
 hostiles(17).x := 1000
-hostiles(17).y := 600
+hostiles(17).y := 490
 hostiles(18).x := 1050
-hostiles(18).y := 600
+hostiles(18).y := 500
 hostiles(19).x := 1100
-hostiles(19).y := 600
+hostiles(19).y := 300
 hostiles(20).x := 1200
 hostiles(20).y := 106
 
@@ -251,95 +251,95 @@ loop
     % -- START INPUT HANDLING -- %
     
     if cooldown > 0 then
-        cooldown -= 1
-        sniperY -= 1
+	cooldown -= 1
+	sniperY -= 1
     end if
     
     if reloadCountdown > 0 then
-        reloadCountdown -= 1
-        if reloadCountdown = 1 then
-            if totalAmmo < 5 then
-                if totalAmmo > (5 - ammo) then
-                    totalAmmo -= (5 - ammo)
-                    ammo := 5
-                else
-                    ammo += totalAmmo
-                    totalAmmo := 0
-                end if
-            else
-                totalAmmo -= (5 - ammo)
-                ammo := 5
-            end if
-        end if
+	reloadCountdown -= 1
+	if reloadCountdown = 1 then
+	    if totalAmmo < 5 then
+		if totalAmmo > (5 - ammo) then
+		    totalAmmo -= (5 - ammo)
+		    ammo := 5
+		else
+		    ammo += totalAmmo
+		    totalAmmo := 0
+		end if
+	    else
+		totalAmmo -= (5 - ammo)
+		ammo := 5
+	    end if
+	end if
     end if
     
     if timeLeft > 0 then
-        timeLeft -= 3
+	timeLeft -= 3
     end if
     
     if timeLeft < 1 then
-        lose := true
+	lose := true
     end if
     
     if ammo = 0 & totalAmmo = 0 & cooldown = 0 then
-        lose := true
+	lose := true
     end if
     
     if enemies = 0 & cooldown = 0 then
-        win := true
-        lose := false
+	win := true
+	lose := false
     end if
     
     Input.KeyDown (chars)
     
     if chars ('w') then
-        sniperY += speed
+	sniperY += speed
     end if
     if chars ('s') then
-        sniperY -= speed
+	sniperY -= speed
     end if
     if chars ('a') then
-        sniperX -= speed
+	sniperX -= speed
     end if
     if chars ('d') then
-        sniperX += speed
+	sniperX += speed
     end if
     if chars ('r') & reloadCountdown = 0 & ammo < 5 & cooldown = 0 & totalAmmo > 0 then
-        reloadCountdown := 100
+	reloadCountdown := 100
     end if
     if chars (' ') & cooldown = 0 & reloadCountdown = 0 then
-        if ammo > 0 then
-            
-            for i : 1 .. upper(hostiles)
-                if hostiles(i).x - (sniperX + sniperWidthHalf) >= -4 & hostiles(i).x - (sniperX + sniperWidthHalf) <= 4 then
-                    if hostiles(i).y - (sniperY - sniperHeightHalf) >= -4 & hostiles(i).y - (sniperY - sniperHeightHalf) <= 4 then
-                        
-                        enemies -= 1
-                        hostiles(i).x := -999
-                        hostiles(i).y := -999
-                        
-                    end if
-                end if
-            end for
-                
-            sniperY += recoil
-            cooldown := recoil
-            ammo -= 1
-        end if
+	if ammo > 0 then
+	    
+	    for i : 1 .. upper(hostiles)
+		if hostiles(i).x - (sniperX + sniperWidthHalf) >= -4 & hostiles(i).x - (sniperX + sniperWidthHalf) <= 4 then
+		    if hostiles(i).y - (sniperY - sniperHeightHalf) >= -4 & hostiles(i).y - (sniperY - sniperHeightHalf) <= 4 then
+			
+			enemies -= 1
+			hostiles(i).x := -999
+			hostiles(i).y := -999
+			
+		    end if
+		end if
+	    end for
+		
+	    sniperY += recoil
+	    cooldown := recoil
+	    ammo -= 1
+	end if
     end if
     if chars (KEY_SHIFT) then
-        speed := 2
+	speed := 2
     else
-        if not chars (KEY_CTRL) then
-            speed := 4
-        end if
+	if not chars (KEY_CTRL) then
+	    speed := 4
+	end if
     end if
     if chars (KEY_CTRL) then
-        speed := 1
+	speed := 1
     else
-        if not chars (KEY_SHIFT) then
-            speed := 4
-        end if
+	if not chars (KEY_SHIFT) then
+	    speed := 4
+	end if
     end if
     
     % -- END INPUT HANDLING -- %
@@ -375,9 +375,9 @@ loop
     % -- START DRAWING ENEMIES -- % (Oh god)
     
     for i : 1 .. upper(hostiles)
-        drawfilloval(hostiles(i).x, hostiles(i).y, 5, 5, 12)
+	drawfilloval(hostiles(i).x, hostiles(i).y, 5, 5, 12)
     end for
-        
+	
     % -- END DRAWING ENEMIES -- %
     
     % -- START DRAWING SNIPER SCOPE -- %
@@ -427,11 +427,11 @@ loop
     
     Draw.Text (ammoString, sniperX + sniperWidth + 10, sniperY - sniperHeightHalf - 10, font, white)
     if ammo = 0 & cooldown = 0 & reloadCountdown = 0 then
-        Draw.Text ("Press [R] to reload!", sniperX + sniperWidth + 10, sniperY - sniperHeight + 36, font, white)
+	Draw.Text ("Press [R] to reload!", sniperX + sniperWidth + 10, sniperY - sniperHeight + 36, font, white)
     end if
     if reloadCountdown > 0 then
-        drawfillbox(sniperX + sniperWidth + 10, sniperY - sniperHeight + 58, sniperX + sniperWidth + 114, sniperY - sniperHeight + 47, white)
-        drawfillbox(sniperX + sniperWidth + 12, sniperY - sniperHeight + 56, sniperX + sniperWidth + 112 - reloadCountdown, sniperY - sniperHeight + 49, black)
+	drawfillbox(sniperX + sniperWidth + 10, sniperY - sniperHeight + 58, sniperX + sniperWidth + 114, sniperY - sniperHeight + 47, white)
+	drawfillbox(sniperX + sniperWidth + 12, sniperY - sniperHeight + 56, sniperX + sniperWidth + 112 - reloadCountdown, sniperY - sniperHeight + 49, black)
     end if
     
     % -- END DRAW AMMO COUNT -- %
@@ -439,7 +439,7 @@ loop
     % -- START DRAW BULLET STAR -- %
     
     if cooldown = recoil then
-        Draw.FillStar (sniperX + sniperWidthHalf - starSize, sniperY - sniperHeightHalf - starSize, sniperX + sniperWidthHalf + starSize, sniperY - sniperHeightHalf + starSize, yellow)
+	Draw.FillStar (sniperX + sniperWidthHalf - starSize, sniperY - sniperHeightHalf - starSize, sniperX + sniperWidthHalf + starSize, sniperY - sniperHeightHalf + starSize, yellow)
     end if
     
     % -- END DRAW BULLET STAR -- %
@@ -452,19 +452,19 @@ loop
     
     
     if lose = true then
-        drawfillbox(0,0, 1300, 1300, black)
-        colorback(black)
-        color(white)
-        put "YOU LOST"
-        put "YOU HAD " + intstr(enemies) + " REMAINING"
+	drawfillbox(0,0, 1300, 1300, black)
+	colorback(black)
+	color(white)
+	put "YOU LOST"
+	put "YOU HAD " + intstr(enemies) + " REMAINING"
     end if
     
     if win = true then
-        drawfillbox(0,0, 1300, 1300, black)
-        colorback(black)
-        color(white)
-        put "YOU WON"
-        put "YOU HAD " + intstr(timeLeft) + " SECONDS REMAINING"
+	drawfillbox(0,0, 1300, 1300, black)
+	colorback(black)
+	color(white)
+	put "YOU WON"
+	put "YOU HAD " + intstr(timeLeft) + " SECONDS REMAINING"
     end if
     
     
